@@ -1,15 +1,38 @@
+import DTOS.IssueTicketRequestDto;
+import DTOS.IssueTicketResponseDto;
+import controllers.TicketController;
+import models.Ticket;
+import models.VehicleType;
+import repositories.GateRepository;
+import repositories.ParkingLotRepository;
+import repositories.TicketRepository;
+import repositories.VehicleRepository;
+import services.TicketService;
+
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        //Create a ticket.
+        IssueTicketRequestDto requestDto= new IssueTicketRequestDto();
+        requestDto.setGateId(13L);
+        requestDto.setVehicleNumber("KA123XL");
+        requestDto.setVehicleType(VehicleType.SUV);
+        requestDto.setVehicleOwnerName("Sam");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+
+        GateRepository gateRepository= new GateRepository();
+        ParkingLotRepository parkingLotRepository=new ParkingLotRepository();
+        TicketRepository ticketRepository= new TicketRepository();
+        VehicleRepository vehicleRepository=new VehicleRepository();
+
+        TicketService ticketService = new TicketService(gateRepository,
+                vehicleRepository,
+                parkingLotRepository,
+                ticketRepository);
+        TicketController ticketController= new TicketController(ticketService);
+        IssueTicketResponseDto responseDto= ticketController.issueTicket(requestDto);
+        Ticket ticket=responseDto.getTicket();
+
     }
 }
